@@ -14,9 +14,9 @@ export const myController = fastifyPlugin(async server => {
 
 	server.withTypeProvider<ZodTypeProvider>().post('/orders/:orderId/processOrder', {
 		schema: {
-			params: z.object({
-				orderId: z.coerce.number(),
-			}),
+				params: z.object({
+					orderId: z.coerce.number().positive("orderId must be positive !"),
+				}),
 		},
 	}, async (request, reply) => {
 		const dbse = server.diContainer.resolve('db');
