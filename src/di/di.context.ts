@@ -5,6 +5,11 @@ import {type INotificationService} from '@/services/notifications.port.js';
 import {NotificationService} from '@/services/impl/notification.service.js';
 import {type Database} from '@/db/type.js';
 import {ProductService} from '@/services/impl/product.service.js';
+import {type IProductHandler} from '@/services/product-handler.port.js';
+import {NormalProductHandler} from '@/services/impl/product-handlers/normal-product.handler.js';
+import {SeasonalProductHandler} from '@/services/impl/product-handlers/seasonal-product.handler.js';
+import {ExpirableProductHandler} from '@/services/impl/product-handlers/expirable-product.handler.js';
+import {OrderProcessor} from '@/services/impl/order-processor.service.js';
 
 declare module '@fastify/awilix' {
 
@@ -13,6 +18,11 @@ declare module '@fastify/awilix' {
 		db: Database;
 		ns: INotificationService;
 		ps: ProductService;
+		normalProductHandler: IProductHandler;
+		seasonalProductHandler: IProductHandler;
+		expirableProductHandler: IProductHandler;
+		handlers: IProductHandler[];
+		orderProcessor: OrderProcessor;
 	}
 }
 
@@ -30,6 +40,27 @@ export async function configureDiContext(
 	});
 	diContainer.register({
 		ps: asClass(ProductService),
+	});
+
+	// Product handlers
+	diContainer.register({
+		normalProductHandler: asClass(NormalProductHandler),
+		seasonalProductHandler: asClass(SeasonalProductHandler),
+		expirableProductHandler: asClass(ExpirableProductHandler),
+	});
+
+	// Aggregate handlers
+	diContainer.register({
+		handlers: asValue([
+			diContainer.resolve('normalProductHandler'),
+			diContainer.resolve('seasonalProductHandler'),
+			diContainer.resolve('expirableProductHandler'),
+		]),
+	});
+
+	// Order processor
+	diContainer.register({
+		orderProcessor: asClass(OrderProcessor),
 	});
 }
 

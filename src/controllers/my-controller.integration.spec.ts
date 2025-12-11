@@ -39,12 +39,11 @@ describe('MyController Integration Tests', () => {
 	it('ProcessOrderShouldReturn', async () => {
 		const client = supertest(fastify.server);
 		const allProducts = createProducts();
-		const orderId = await database.transaction(async tx => {
-			const productList = await tx.insert(products).values(allProducts).returning({productId: products.id});
-			const [order] = await tx.insert(orders).values([{}]).returning({orderId: orders.id});
-			await tx.insert(ordersToProducts).values(productList.map(p => ({orderId: order!.orderId, productId: p.productId})));
-			return order!.orderId;
-		});
+		// Use simple sequential queries for sqlite compatibility (no async txn callback)
+		const productList = await database.insert(products).values(allProducts).returning({productId: products.id});
+		const [order] = await database.insert(orders).values([{}]).returning({orderId: orders.id});
+		await database.insert(ordersToProducts).values(productList.map(p => ({orderId: order!.orderId, productId: p.productId})));
+		const orderId = order!.orderId;
 
 		await client.post(`/orders/${orderId}/processOrder`).expect(200).expect('Content-Type', /application\/json/);
 
