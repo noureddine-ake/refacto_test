@@ -7,7 +7,7 @@ import {type Product} from '@/db/schema.js';
  * This follows the Strategy Pattern - allows runtime selection of algorithm
  * without the need for switch statements or if-else chains.
  */
-export interface IProductHandler {
+export type IProductHandler = {
 	/**
 	 * Determines if this handler can process the given product type.
 	 * Used to find the right handler for a product.
@@ -24,4 +24,4 @@ export interface IProductHandler {
 	 * @param product - The product to process
 	 */
 	processOrder(product: Product): Promise<void>;
-}
+};

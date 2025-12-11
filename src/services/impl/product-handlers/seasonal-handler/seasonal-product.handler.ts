@@ -1,9 +1,9 @@
 import {eq} from 'drizzle-orm';
 import {type Cradle} from '@fastify/awilix';
-import {type IProductHandler} from '../../product-handler.port.js';
+import {type IProductHandler} from '../../../product-handler.port.js';
+import {type INotificationService} from '../../../notifications.port.js';
 import {type Product, products} from '@/db/schema.js';
 import {type Database} from '@/db/type.js';
-import {type INotificationService} from '../../notifications.port.js';
 import {ProductType, ONE_DAY_MS} from '@/domain/product-type.js';
 
 export class SeasonalProductHandler implements IProductHandler {

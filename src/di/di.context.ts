@@ -6,10 +6,8 @@ import {NotificationService} from '@/services/impl/notification.service.js';
 import {type Database} from '@/db/type.js';
 import {ProductService} from '@/services/impl/product.service.js';
 import {type IProductHandler} from '@/services/product-handler.port.js';
-import {NormalProductHandler} from '@/services/impl/product-handlers/normal-product.handler.js';
-import {SeasonalProductHandler} from '@/services/impl/product-handlers/seasonal-product.handler.js';
-import {ExpirableProductHandler} from '@/services/impl/product-handlers/expirable-product.handler.js';
 import {OrderProcessor} from '@/services/impl/order-processor.service.js';
+import {ExpirableProductHandler, NormalProductHandler, SeasonalProductHandler} from '@/services/impl/product-handlers/index.js';
 
 declare module '@fastify/awilix' {
 
@@ -44,9 +42,9 @@ export async function configureDiContext(
 
 	// Product handlers
 	diContainer.register({
-		normalProductHandler: asClass(NormalProductHandler),
-		seasonalProductHandler: asClass(SeasonalProductHandler),
-		expirableProductHandler: asClass(ExpirableProductHandler),
+		normalProductHandler: asClass<IProductHandler>(NormalProductHandler),
+		seasonalProductHandler: asClass<IProductHandler>(SeasonalProductHandler),
+		expirableProductHandler: asClass<IProductHandler>(ExpirableProductHandler),
 	});
 
 	// Aggregate handlers

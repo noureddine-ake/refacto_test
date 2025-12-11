@@ -1,8 +1,7 @@
 import {eq} from 'drizzle-orm';
-import {type Cradle} from '@fastify/awilix';
-import {orders, products, type Order} from '@/db/schema.js';
-import {type Database} from '@/db/type.js';
 import {type IProductHandler} from '../product-handler.port.js';
+import {orders, type products, type Order} from '@/db/schema.js';
+import {type Database} from '@/db/type.js';
 
 /**
  * OrderProcessor orchestrates the order processing workflow.
@@ -58,9 +57,10 @@ export class OrderProcessor {
 
 		// Step 2 & 3: Process each product with appropriate handler
 		if (order.products && order.products.length > 0) {
-			for (const {product} of order.products) {
+			const items = order.products as Array<{product: typeof products.$inferSelect}>;
+			await Promise.all(items.map(async ({product}) => {
 				await this.processProduct(product);
-			}
+			}));
 		}
 
 		return order;

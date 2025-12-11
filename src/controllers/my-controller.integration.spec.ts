@@ -43,7 +43,7 @@ describe('MyController Integration Tests', () => {
 		const productList = await database.insert(products).values(allProducts).returning({productId: products.id});
 		const [order] = await database.insert(orders).values([{}]).returning({orderId: orders.id});
 		await database.insert(ordersToProducts).values(productList.map(p => ({orderId: order!.orderId, productId: p.productId})));
-		const orderId = order!.orderId;
+		const {orderId} = (order!);
 
 		await client.post(`/orders/${orderId}/processOrder`).expect(200).expect('Content-Type', /application\/json/);
 
